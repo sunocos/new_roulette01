@@ -24,17 +24,27 @@
 </head>
 <body>
   <h1>Roulette App</h1>
-  <canvas id="rouletteCanvas" width="500" height="500"></canvas>
-  <button id="spinButton">Spin</button>
+
+  <div id="setup">
+    <p>Enter player names (2-10), one per line:</p>
+    <textarea id="nameInput" rows="10" cols="30"></textarea><br>
+    <button id="startButton">Start</button>
+  </div>
+
+  <canvas id="rouletteCanvas" width="500" height="500" style="display: none;"></canvas>
+  <button id="spinButton" style="display: none;">Spin</button>
 
   <script>
-    const names = ["Alice", "Bob", "Charlie", "David", "Eve"];
+    let names = [];
     const canvas = document.getElementById("rouletteCanvas");
     const ctx = canvas.getContext("2d");
     const spinButton = document.getElementById("spinButton");
+    const startButton = document.getElementById("startButton");
+    const nameInput = document.getElementById("nameInput");
+    const setupDiv = document.getElementById("setup");
 
     let startAngle = 0;
-    const arc = Math.PI / (names.length / 2);
+    let arc = 0;
 
     const colors = ["#FF5733", "#33FF57", "#3357FF", "#F3FF33", "#FF33A8"];
 
@@ -61,6 +71,22 @@
         ctx.fillText(names[i], -ctx.measureText(names[i]).width / 2, 0);
         ctx.restore();
       }
+    }
+
+    function startGame() {
+      names = nameInput.value
+        .split(/[\n,]+/)
+        .map((n) => n.trim())
+        .filter((n) => n);
+      if (names.length < 2 || names.length > 10) {
+        alert("Please enter between 2 and 10 names.");
+        return;
+      }
+      arc = Math.PI / (names.length / 2);
+      setupDiv.style.display = "none";
+      canvas.style.display = "block";
+      spinButton.style.display = "inline-block";
+      drawRouletteWheel();
     }
 
     function rotateWheel() {
@@ -95,8 +121,8 @@
       requestAnimationFrame(rotate);
     }
 
+    startButton.addEventListener("click", startGame);
     spinButton.addEventListener("click", spin);
-    drawRouletteWheel();
   </script>
 </body>
 </html>
